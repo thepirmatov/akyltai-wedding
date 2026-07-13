@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Акылтай & Толкун</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4a4238;
+            --accent-color: #b89c7c;
+            --bg-color: #f4f4f4;
+            --btn-color: #6d7561;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--primary-color);
+            background-color: #f4efe8;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            min-height: 100vh;
+            padding-bottom: 20px;
+            position: relative;
+            border: 15px solid #fff;
+            border-radius: 5px;
+        }
+
+        .container::after {
+            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px solid var(--accent-color); opacity: 0.5; pointer-events: none;
+        }
+
+        .header-section {
+            min-height: 85vh;
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center;
+            position: relative;
+            background-image: url('img/hero.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: top center;
+            padding: 0 25px 30px 25px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 35%, rgba(255,255,255,0.94) 70%, #fff 100%);
+            pointer-events: none;
+        }
+
+        @media (max-width: 480px) {
+            .container { margin: 0 auto; border-width: 5px; }
+            .container::after { top: 5px; left: 5px; right: 5px; bottom: 5px; }
+        }
+
+        .top-date {
+            position: absolute;
+            top: 9%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-size: clamp(1.2rem, 5vw, 1.6rem);
+            letter-spacing: 5px;
+            color: #2a2a2a;
+        }
+
+        .header-names {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header-names .name-line {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: clamp(3rem, 15vw, 4.2rem);
+            line-height: 1.05;
+            color: #1a1a1a;
+        }
+
+        .header-names .amp {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            font-size: clamp(1.6rem, 7vw, 2.1rem);
+            color: #1a1a1a;
+            margin: -6px 0;
+        }
+
+        .header-bottom { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 18px; }
+
+        .scroll-hint-text { font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary-color); opacity: 0.75; font-weight: 600; }
+
+        .scroll-hint { animation: bounce 2s infinite; color: var(--primary-color); font-size: 1.2rem; opacity: 0.75; }
+
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+
+        .section { padding: 40px 25px; text-align: center; position: relative; z-index: 2; }
+        h2 { text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent-color); margin-bottom: 25px; font-weight: 700; }
+        p.text-body { font-size: 1.25rem; line-height: 1.6; margin-bottom: 20px; font-weight: 600; color: var(--primary-color); }
+        .divider-ornament { font-size: 1.5rem; color: var(--accent-color); margin: 10px 0; opacity: 0.7; }
+
+        .calendar-wrapper {
+            background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin: 20px 0; display: inline-block; border: 1px solid #f0f0f0;
+        }
+
+        .month-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400; font-size: 2.8rem; color: var(--primary-color); margin-bottom: 10px; }
+        .calendar-table { width: 100%; border-collapse: collapse; }
+        .calendar-table th { color: var(--accent-color); font-weight: 600; padding: 8px; font-size: 0.95rem; }
+        .calendar-table td { padding: 10px; font-size: 1.15rem; font-weight: 600; color: var(--primary-color); }
+        .wedding-day {
+            background-color: var(--accent-color); color: #fff; border-radius: 50%;
+            display: inline-block; width: 36px; height: 36px; line-height: 36px; box-shadow: 0 3px 8px rgba(184, 156, 124, 0.4);
+        }
+
+        .timer-container { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+        .timer-box {
+            display: flex; flex-direction: column; align-items: center; background: #fff; padding: 15px 12px;
+            border-radius: 8px; min-width: 75px; border: 1px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .timer-val { font-size: 2rem; font-weight: 700; color: var(--primary-color); }
+        .timer-label { font-size: 0.75rem; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-top: 5px; }
+
+        .location-title { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); margin: 10px 0 5px 0; letter-spacing: 3px; }
+        .location-address { font-size: 1.05rem; color: #777; margin: 8px 0 5px 0; font-weight: 600; }
+        .btn-map {
+            display: block; width: 100%; max-width: 280px; margin: 25px auto 10px auto; padding: 18px;
+            text-decoration: none; border-radius: 50px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: #fff; color: #00AA00; border: 2px solid #00AA00;
+        }
+        .btn-map:hover { background-color: #00AA00; color: #fff; transform: translateY(-3px); }
+
+        .hosts-names {
+            font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600;
+            font-size: clamp(1.8rem, 8vw, 2.4rem); color: var(--accent-color); margin-top: 5px;
+        }
+
+        .program-list { display: flex; flex-direction: column; gap: 18px; margin-top: 10px; }
+        .program-row {
+            display: flex; justify-content: space-between; align-items: center; gap: 15px;
+            background: #fff; border: 1px solid #f0f0f0; border-radius: 10px; padding: 18px 22px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
+        .program-label { font-size: 1.1rem; font-weight: 600; text-align: left; color: var(--primary-color); }
+        .program-time { font-size: 1.6rem; font-weight: 700; color: var(--accent-color); white-space: nowrap; }
+
+        .collage-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;
+        }
+        .collage-grid a {
+            display: block; overflow: hidden; border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+        .collage-grid img {
+            width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block;
+        }
+
+        .rsvp-section {
+            background: #fff; padding: 35px 15px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin: 20px;
+            border: 1px solid rgba(184, 156, 124, 0.2); text-align: center;
+            position: relative; z-index: 2;
+        }
+        .rsvp-title {
+            font-size: 1.05rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--primary-color); margin-bottom: 10px;
+        }
+        .rsvp-deadline {
+            font-size: 0.95rem; font-weight: 600; color: var(--accent-color); margin-bottom: 20px; font-style: italic;
+        }
+        .form-label {
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: #888; display: block; margin-bottom: 10px; margin-top: 25px; text-align: left;
+        }
+        .form-input {
+            width: 100%; padding: 18px; border: 1px solid #eee; border-radius: 10px;
+            font-size: 1.1rem; font-family: 'Cormorant Garamond', serif; background: #fdfdfd;
+            color: var(--primary-color); outline: none; transition: border 0.3s;
+        }
+        .form-input:focus { border-color: var(--accent-color); }
+        .radio-container { display: flex; flex-direction: column; gap: 12px; }
+        .radio-option {
+            display: flex; align-items: center; padding: 16px; border: 1px solid #eee;
+            border-radius: 10px; background: #fdfdfd; cursor: pointer; transition: all 0.3s;
+        }
+        .radio-option:hover { border-color: var(--accent-color); }
+        .radio-option input[type="radio"] { margin-right: 15px; transform: scale(1.4); accent-color: var(--btn-color); }
+        .radio-text { font-size: 1.15rem; font-weight: 600; color: var(--primary-color); }
+        .stepper {
+            display: flex; align-items: center; justify-content: center; gap: 25px;
+            background: #fdfdfd; border: 1px solid #eee; border-radius: 10px; padding: 14px;
+        }
+        .stepper-btn {
+            width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--accent-color);
+            background: #fff; color: var(--primary-color); font-size: 1.4rem; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; line-height: 1; padding: 0;
+        }
+        .stepper-btn:hover:not(:disabled) { background: var(--accent-color); color: #fff; }
+        .stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .stepper-value { font-size: 1.6rem; font-weight: 700; min-width: 34px; text-align: center; color: var(--primary-color); }
+        .btn-submit {
+            display: block; width: 100%; background-color: var(--btn-color); color: #fff;
+            border: none; padding: 18px; border-radius: 10px; margin-top: 35px;
+            font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(109, 117, 97, 0.3); transition: all 0.3s;
+        }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(109, 117, 97, 0.4); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .rsvp-message {
+            display: none; margin-top: 20px; padding: 15px; border-radius: 10px;
+            font-size: 1rem; font-weight: 600; text-align: center;
+        }
+        .rsvp-message.success { display: block; background: #eaf7ea; color: #2e7d32; border: 1px solid #b7e0b8; }
+        .rsvp-message.error { display: block; background: #fdecea; color: #c62828; border: 1px solid #f5c1bd; }
+
+        .music-fab {
+            margin-top: 16px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 12px 24px; border-radius: 40px;
+            background: rgba(255,255,255,0.7); border: 1.5px solid var(--accent-color);
+            color: var(--primary-color); font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;
+            cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+        .music-fab i { font-size: 1rem; }
+        .music-fab-text { white-space: nowrap; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+
+        <div class="header-section" data-aos="fade-in" data-aos-duration="1500">
+            <div class="top-date" data-aos="fade-down" data-aos-delay="200">30.07.2026</div>
+
+            <div class="header-names" data-aos="zoom-in" data-aos-delay="300">
+                <span class="name-line">Акылтай</span>
+                <span class="amp">&amp;</span>
+                <span class="name-line">Толкун</span>
+
+                <button id="musicToggle" class="music-fab" aria-label="Музыканы ойнотуу">
+                    <i class="fa-solid fa-play"></i>
+                    <span class="music-fab-text">музыканы жандыруу</span>
+                </button>
+            </div>
+
+            <div class="header-bottom">
+                <div class="scroll-hint">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="divider-ornament" data-aos="fade-up">❧</div>
+            <div class="calendar-wrapper" data-aos="zoom-in-up" data-aos-duration="1000">
+                <div class="month-title">Июль</div>
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Дш</th><th>Шш</th><th>Шр</th><th>Бш</th><th>Жм</th><th>Иш</th><th>Жш</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: #ccc;">29</td><td style="color: #ccc;">30</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
+                        </tr>
+                        <tr>
+                            <td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td>
+                        </tr>
+                        <tr>
+                            <td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td>
+                        </tr>
+                        <tr>
+                            <td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td>
+                        </tr>
+                        <tr>
+                            <td>27</td><td>28</td><td>29</td><td><span class="wedding-day">30</span></td><td>31</td><td style="color: #ccc;">1</td><td style="color: #ccc;">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="margin-top:20px; font-style: italic;" data-aos="fade-up" data-aos-delay="200">Бул күнү биздин кубанычыбызга<br>ортоктош болуңуз!</p>
+        </div>
+
+        <div class="section" data-aos="fade-up">
+            <div class="divider-ornament">❧</div>
+            <h2>Тойго чейин калды:</h2>
+            <div class="timer-container" id="countdown">
+                <div class="timer-box" data-aos="flip-left" data-aos-delay="100">
+                    <span class="timer-val" id="days">00</span>
+                    <span class="timer-label">Күн</span>
+                </div>
+                <div class="timer-box" data-aos="flip-left" data-aos-delay="300">
+                    <span class="timer-val" id="hours">00</span>
+                    <span class="timer-label">Саат</span>
+                </div>
+                <div class="timer-box" data-aos="flip-left" data-aos-delay="500">
+                    <span class="timer-val" id="minutes">00</span>
+                    <span class="timer-label">Мүнөт</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 20px;">
+            <div class="divider-ornament">❧</div>
+            <h2>Урматтуу коноктор!</h2>
+            <p class="text-body">
+                Сиздерди<br>
+                <span style="font-size: clamp(1.6rem, 6vw, 2.2rem); white-space: nowrap; color: var(--accent-color); font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; display: block; margin: 15px 0;">
+                    Акылтай & Толкундун
+                </span>
+                үйлөнүү үлпөт тоюна арналган<br>
+                салтанатыбызга келип,<br>
+                кадырлуу коногубуз болуп кетүүгө чакырабыз!
+            </p>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 20px;">
+            <div class="divider-ornament">❧</div>
+            <h2>Тойдун ээлери</h2>
+            <div class="hosts-names">Өмүрбек &amp; Роза</div>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 20px;">
+            <div class="divider-ornament">❧</div>
+            <h2>Программа</h2>
+            <div class="program-list">
+                <div class="program-row" data-aos="fade-up" data-aos-delay="100">
+                    <span class="program-label">Коноктордун келиши</span>
+                    <span class="program-time">16:00</span>
+                </div>
+                <div class="program-row" data-aos="fade-up" data-aos-delay="200">
+                    <span class="program-label">Тойдун башталышы</span>
+                    <span class="program-time">17:00</span>
+                </div>
+                <div class="program-row" data-aos="fade-up" data-aos-delay="300">
+                    <span class="program-label">Тойдун бүтүшү</span>
+                    <span class="program-time">22:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 20px;">
+            <div class="divider-ornament">❧</div>
+            <h2>Дареги:</h2>
+            <div class="location-title">«ARNA»</div>
+            <div class="location-address">Курманжан Датка көчөсү, 152, Бишкек ш.</div>
+
+            <a href="https://2gis.kg/bishkek/geo/70000001112761356" target="_blank" class="btn-map" data-aos="zoom-in" data-aos-delay="300">
+                <i class="fa-solid fa-map-location-dot"></i> 2GIS Картасы
+            </a>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 20px;">
+            <div class="divider-ornament">❧</div>
+            <div class="collage-grid">
+                <a href="img/collage-1.jpg" target="_blank" data-aos="fade-right" data-aos-delay="100">
+                    <img src="img/collage-1.jpg" alt="Акылтай & Толкун">
+                </a>
+                <a href="img/collage-2.jpg" target="_blank" data-aos="fade-left" data-aos-delay="150">
+                    <img src="img/collage-2.jpg" alt="Акылтай & Толкун">
+                </a>
+                <a href="img/collage-3.jpg" target="_blank" data-aos="fade-right" data-aos-delay="200">
+                    <img src="img/collage-3.jpg" alt="Акылтай & Толкун">
+                </a>
+                <a href="img/collage-4.jpg" target="_blank" data-aos="fade-left" data-aos-delay="250">
+                    <img src="img/collage-4.jpg" alt="Акылтай & Толкун">
+                </a>
+            </div>
+        </div>
+
+        <div class="section" data-aos="fade-up" style="padding-bottom: 0;">
+            <div class="divider-ornament">❧</div>
+        </div>
+
+        <div class="rsvp-section" data-aos="fade-up">
+            <div class="rsvp-title">Катышууңузду ырастап коюңуз</div>
+            <div class="rsvp-deadline">Сураныч, 20.07.2026 чейин толтуруңуз</div>
+
+            <label class="form-label">Аты-жөнүңүз</label>
+            <input type="text" id="guestName" class="form-input" placeholder="Мисалы: Асан Үсөнов">
+
+            <label class="form-label">Тойго келе аласызбы?</label>
+            <div class="radio-container">
+                <label class="radio-option">
+                    <input type="radio" name="attendance" value="Келет">
+                    <span class="radio-text">Ооба, сөзсүз барам!</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="attendance" value="Келбейт">
+                    <span class="radio-text">Тилекке каршы, бара албайм</span>
+                </label>
+            </div>
+
+            <div id="guestCountBlock" style="display: none;">
+                <label class="form-label">Канча адам болосуздар?</label>
+                <div class="stepper">
+                    <button type="button" class="stepper-btn" id="decreaseGuests" aria-label="Азайтуу">&minus;</button>
+                    <span class="stepper-value" id="guestCount">1</span>
+                    <button type="button" class="stepper-btn" id="increaseGuests" aria-label="Көбөйтүү">+</button>
+                </div>
+            </div>
+
+            <label class="form-label">Кимдин коногусуз?</label>
+            <div class="radio-container">
+                <label class="radio-option">
+                    <input type="radio" name="side" value="Акылтай">
+                    <span class="radio-text">Акылтай</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="side" value="Толкун">
+                    <span class="radio-text">Толкун</span>
+                </label>
+            </div>
+
+            <button class="btn-submit" id="rsvpSubmit" onclick="sendRSVP()">Жоопту жөнөтүү</button>
+            <div class="rsvp-message" id="rsvpMessage"></div>
+        </div>
+
+        <div style="padding: 20px; text-align: center; color: var(--accent-color); opacity: 0.6;">
+            ❧ ❧ ❧
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: true, offset: 100 });
+
+        // МУЗЫКА
+        const audio = document.getElementById("bg-music");
+        const musicToggle = document.getElementById("musicToggle");
+        const musicIcon = musicToggle.querySelector("i");
+
+        musicToggle.addEventListener("click", function() {
+            if (audio.paused) {
+                audio.play().catch(function() {
+                    console.log("Музыка блоктолду.");
+                });
+            } else {
+                audio.pause();
+            }
+        });
+
+        audio.addEventListener("play", function() {
+            musicIcon.classList.remove("fa-play");
+            musicIcon.classList.add("fa-pause");
+        });
+
+        audio.addEventListener("pause", function() {
+            musicIcon.classList.remove("fa-pause");
+            musicIcon.classList.add("fa-play");
+        });
+
+        // ТАЙМЕР
+        const weddingDate = new Date("July 30, 2026 17:00:00").getTime();
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("countdown").innerHTML = "<div>Той башталды!</div>";
+            }
+        }, 1000);
+
+        // КОНОК САНЫ (STEPPER)
+        let guestCount = 1;
+        const guestCountEl = document.getElementById("guestCount");
+        const guestCountBlock = document.getElementById("guestCountBlock");
+        const decreaseGuestsBtn = document.getElementById("decreaseGuests");
+        const increaseGuestsBtn = document.getElementById("increaseGuests");
+
+        function updateGuestCount() {
+            guestCountEl.textContent = guestCount;
+            decreaseGuestsBtn.disabled = guestCount <= 1;
+        }
+
+        decreaseGuestsBtn.addEventListener("click", function() {
+            if (guestCount > 1) { guestCount--; updateGuestCount(); }
+        });
+        increaseGuestsBtn.addEventListener("click", function() {
+            if (guestCount < 20) { guestCount++; updateGuestCount(); }
+        });
+        updateGuestCount();
+
+        // "ТОЙГО КЕЛЕ АЛАСЫЗБЫ?" ЖООБУНА ЖАРАША КОНОК САНЫН КӨРСӨТҮҮ/ЖАШЫРУУ
+        document.getElementsByName("attendance").forEach(function(radio) {
+            radio.addEventListener("change", function() {
+                if (this.value === "Келет") {
+                    guestCountBlock.style.display = "block";
+                } else {
+                    guestCountBlock.style.display = "none";
+                    guestCount = 1;
+                    updateGuestCount();
+                }
+            });
+        });
+
+        // GOOGLE FORM АРКЫЛУУ ЖООП ЖӨНӨТҮҮ
+        const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSc-LGi5qWwGKymgyhf4wP5JSy6YH9h_u1HAfHxL3ashNmWjpw/formResponse";
+        const ENTRY_NAME = "entry.1942944914";
+        const ENTRY_ATTENDANCE = "entry.919598605";
+        const ENTRY_GUEST_COUNT = "entry.444962557";
+        const ENTRY_SIDE = "entry.1898574196";
+
+        function showRsvpMessage(text, type) {
+            const messageEl = document.getElementById("rsvpMessage");
+            messageEl.textContent = text;
+            messageEl.className = "rsvp-message " + type;
+        }
+
+        function sendRSVP() {
+            const name = document.getElementById("guestName").value.trim();
+            const attendanceEl = document.querySelector('input[name="attendance"]:checked');
+            const sideEl = document.querySelector('input[name="side"]:checked');
+
+            if (!name) { showRsvpMessage("Сураныч, аты-жөнүңүздү жазыңыз!", "error"); return; }
+            if (!attendanceEl) { showRsvpMessage("Сураныч, тойго келе алаарыңызды белгилеңиз!", "error"); return; }
+            if (!sideEl) { showRsvpMessage("Сураныч, кимдин коногу экениңизди тандаңыз!", "error"); return; }
+
+            const submitBtn = document.getElementById("rsvpSubmit");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Жөнөтүлүүдө...";
+
+            const guestCountToSubmit = (attendanceEl.value === "Келет") ? guestCount : 0;
+
+            const formData = new URLSearchParams();
+            formData.append(ENTRY_NAME, name);
+            formData.append(ENTRY_ATTENDANCE, attendanceEl.value);
+            formData.append(ENTRY_GUEST_COUNT, guestCountToSubmit);
+            formData.append(ENTRY_SIDE, sideEl.value);
+
+            fetch(GOOGLE_FORM_ACTION, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: formData.toString()
+            }).then(function() {
+                showRsvpMessage("Рахмат! Сиздин жообуңуз кабыл алынды.", "success");
+                submitBtn.textContent = "Жөнөтүлдү ✓";
+            }).catch(function() {
+                showRsvpMessage("Ката кетти. Сураныч, интернет байланышыңызды текшерип, кайра аракет кылыңыз.", "error");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Жоопту жөнөтүү";
+            });
+        }
+    </script>
+</body>
+</html>
