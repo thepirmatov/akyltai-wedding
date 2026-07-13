@@ -56,7 +56,7 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-position: top center;
-            padding: 0 25px 30px 25px;
+            padding: 0 25px 50px 25px;
             margin-bottom: 10px;
             overflow: hidden;
         }
@@ -113,7 +113,7 @@
             margin: -6px 0;
         }
 
-        .header-bottom { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 18px; }
+        .header-bottom { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 92px; }
 
         .scroll-hint-text { font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--primary-color); opacity: 0.75; font-weight: 600; }
 
@@ -243,7 +243,7 @@
         .rsvp-message.error { display: block; background: #fdecea; color: #c62828; border: 1px solid #f5c1bd; }
 
         .music-fab {
-            margin-top: 16px;
+            position: fixed; z-index: 1000; visibility: hidden;
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
             padding: 12px 24px; border-radius: 40px;
             background: rgba(255,255,255,0.7); border: 1.5px solid var(--accent-color);
@@ -251,8 +251,23 @@
             font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;
             cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.1);
         }
+        .music-fab.is-positioned { visibility: visible; }
+        .music-fab.is-morphing {
+            transition: top 0.4s ease, left 0.4s ease, width 0.4s ease, height 0.4s ease,
+                        background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease,
+                        border-radius 0.4s ease, padding 0.4s ease;
+        }
         .music-fab i { font-size: 1rem; }
-        .music-fab-text { white-space: nowrap; }
+        .music-fab-text { white-space: nowrap; transition: opacity 0.2s ease, width 0.3s ease; }
+
+        .music-fab.is-collapsed {
+            width: 46px; height: 46px; padding: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.9); border: none; color: var(--primary-color);
+        }
+        .music-fab.is-collapsed .music-fab-text {
+            opacity: 0; width: 0; overflow: hidden; margin: 0;
+        }
+        .music-fab.is-collapsed i { margin-left: 2px; }
     </style>
 </head>
 <body>
@@ -270,11 +285,6 @@
                 <span class="name-line">Акылтай</span>
                 <span class="amp">&amp;</span>
                 <span class="name-line">Толкун</span>
-
-                <button id="musicToggle" class="music-fab" aria-label="Музыканы ойнотуу">
-                    <i class="fa-solid fa-play"></i>
-                    <span class="music-fab-text">музыканы жандыруу</span>
-                </button>
             </div>
 
             <div class="header-bottom">
@@ -283,6 +293,11 @@
                 </div>
             </div>
         </div>
+
+        <button id="musicToggle" class="music-fab" aria-label="Музыканы ойнотуу">
+            <i class="fa-solid fa-play"></i>
+            <span class="music-fab-text">музыканы жандыруу</span>
+        </button>
 
         <div class="section">
             <div class="divider-ornament" data-aos="fade-up">❧</div>
@@ -484,6 +499,87 @@
             musicIcon.classList.remove("fa-pause");
             musicIcon.classList.add("fa-play");
         });
+
+        // МУЗЫКА БАТИРМАСЫНЫН ОРУН АЛУУСУ (аттардын астынан бурчтагы түймөгө чейин)
+        const headerNamesEl = document.querySelector(".header-names");
+        const containerEl = document.querySelector(".container");
+        const COLLAPSED_SIZE = 46;
+        let musicBtnCollapsed = false;
+        let expandedSize = null;
+        let morphTimer = null;
+
+        function measureExpandedSize() {
+            if (musicBtnCollapsed) return;
+            const rect = musicToggle.getBoundingClientRect();
+            if (rect.width > COLLAPSED_SIZE + 10) {
+                expandedSize = { width: rect.width, height: rect.height };
+            }
+        }
+
+        function updateMusicBtnPosition() {
+            if (musicBtnCollapsed) {
+                const containerRect = containerEl.getBoundingClientRect();
+                musicToggle.style.top = "18px";
+                musicToggle.style.left = (containerRect.right - 18 - COLLAPSED_SIZE) + "px";
+            } else if (expandedSize) {
+                const nameRect = headerNamesEl.getBoundingClientRect();
+                musicToggle.style.top = (nameRect.bottom + 16) + "px";
+                musicToggle.style.left = (nameRect.left + nameRect.width / 2 - expandedSize.width / 2) + "px";
+            }
+            musicToggle.classList.add("is-positioned");
+        }
+
+        function morphMusicBtn(collapse) {
+            if (collapse === musicBtnCollapsed) return;
+            musicToggle.classList.add("is-morphing");
+            musicBtnCollapsed = collapse;
+            musicToggle.classList.toggle("is-collapsed", collapse);
+            updateMusicBtnPosition();
+            clearTimeout(morphTimer);
+            morphTimer = setTimeout(function() {
+                musicToggle.classList.remove("is-morphing");
+            }, 450);
+        }
+
+        measureExpandedSize();
+        updateMusicBtnPosition();
+
+        window.addEventListener("load", function() {
+            measureExpandedSize();
+            updateMusicBtnPosition();
+        });
+        setTimeout(function() {
+            measureExpandedSize();
+            updateMusicBtnPosition();
+        }, 1500);
+
+        let scrollTicking = false;
+        window.addEventListener("scroll", function() {
+            if (!scrollTicking) {
+                requestAnimationFrame(function() {
+                    updateMusicBtnPosition();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                measureExpandedSize();
+                updateMusicBtnPosition();
+            }, 150);
+        });
+
+        const musicBtnObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                morphMusicBtn(entry.intersectionRatio < 0.5);
+            });
+        }, { threshold: [0, 0.5, 1] });
+
+        musicBtnObserver.observe(document.querySelector(".header-section"));
 
         // ТАЙМЕР
         const weddingDate = new Date("July 30, 2026 17:00:00").getTime();
