@@ -48,7 +48,10 @@ exports.handler = async (event) => {
       await forwardMessage(groomChatId, chatId, message.message_id);
     }
     await sendMessage(chatId, THANKS);
-  } else {
+  } else if (message.text) {
+    // Plain text that isn't a recognized command - nudge them toward media.
+    // Anything else (service messages: member joined, group photo changed,
+    // pinned message, etc.) has neither text nor media and is ignored.
     await sendMessage(chatId, ASK_FOR_MEDIA);
   }
 
