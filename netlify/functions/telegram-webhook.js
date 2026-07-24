@@ -28,13 +28,13 @@ exports.handler = async (event) => {
   const chatId = message.chat.id;
   const text = (message.text || "").trim();
 
-  if (text === "/start") {
+  if (isCommand(text, "/start")) {
     await sendMessage(chatId, GREETING);
     return { statusCode: 200, body: "OK" };
   }
 
-  if (text === "/id") {
-    await sendMessage(chatId, `Сиздин chat ID: ${chatId}`);
+  if (isCommand(text, "/id")) {
+    await sendMessage(chatId, `Chat ID: ${chatId}`);
     return { statusCode: 200, body: "OK" };
   }
 
@@ -54,6 +54,10 @@ exports.handler = async (event) => {
 
   return { statusCode: 200, body: "OK" };
 };
+
+function isCommand(text, command) {
+  return text === command || text.startsWith(command + "@");
+}
 
 async function sendMessage(chatId, text) {
   await fetch(`${TELEGRAM_API}/sendMessage`, {
