@@ -64,7 +64,7 @@ async function sendMessage(chatId, text) {
 }
 
 async function forwardMessage(toChatId, fromChatId, messageId) {
-  await fetch(`${TELEGRAM_API}/forwardMessage`, {
+  const res = await fetch(`${TELEGRAM_API}/forwardMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -73,4 +73,8 @@ async function forwardMessage(toChatId, fromChatId, messageId) {
       message_id: messageId,
     }),
   });
+  const data = await res.json();
+  if (!data.ok) {
+    console.error("forwardMessage failed:", data.description);
+  }
 }
